@@ -1,0 +1,76 @@
+.paginated-resume {
+  position: relative;
+}
+
+/* Off-screen, not hidden: visibility:hidden/display:none would also make
+   html2canvas render this copy blank when exportPDF/exportHTML read it,
+   since it clones the live element's computed style. Pushing it far outside
+   the viewport keeps it fully paintable while never being seen or
+   interactable. */
+.paginated-resume-source-wrap {
+  position: fixed;
+  top: 0;
+  left: -10000px;
+  pointer-events: none;
+}
+
+.paginated-resume-sheets {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.resume-sheet {
+  position: relative;
+  overflow: hidden;
+  /* Matches the current template's actual page background (set as
+     --res-sheet-bg by PaginatedResume.jsx from the rendered .resume-page),
+     falling back to white before that measurement runs on first paint.
+     This is what the continuation-page gap and any blank trailing space
+     show through to, so a dark (or any non-white) template never flashes a
+     white strip between or around its pages. */
+  background: var(--res-sheet-bg, #fff);
+  box-shadow: var(--shadow-paper);
+}
+
+/* Outer wrapper sized to this page's actual slice height (offset gap +
+   content). Deliberately does NOT clip — clipping happens only in
+   .resume-sheet-crop below, so the reserved gap strip is never part of any
+   overflow:hidden region and can't have content bleed into it. */
+.resume-sheet-clip {
+  box-sizing: border-box;
+}
+
+/* Genuinely empty spacer for a continuation page's top margin — a real
+   sibling block, not padding on a clipped box. See the comment in
+   PaginatedResume.jsx for why that distinction matters. */
+.resume-sheet-gap {
+  flex-shrink: 0;
+}
+
+/* The actual clip: sized to exactly this page's content height and
+   positioned (via normal flow, after the gap spacer) so its clip region
+   never overlaps the gap strip above it. */
+.resume-sheet-crop {
+  overflow: hidden;
+  position: relative;
+}
+
+.resume-sheet-inner {
+  position: relative;
+}
+
+.resume-sheet-number {
+  position: absolute;
+  bottom: 10px;
+  right: 14px;
+  padding: 2px 9px;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, .55);
+  color: #fff;
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: .02em;
+  font-variant-numeric: tabular-nums;
+  pointer-events: none;
+}
